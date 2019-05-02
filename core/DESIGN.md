@@ -2,11 +2,13 @@
 ```kotlin
     fun main() {
         val bot = createBot("token") { // Registers modules and creates JDA instance
-            install(PermissionManager)
+            install(PermissionManager) {
+                group("")
+            }
             install(MongoDBSupport) {
                 host = "localhost:6969"
                 user = "root"
-                credentials = "toor"
+                password = "toor"
             }
             
             modules {
@@ -29,9 +31,14 @@
                 val u = arg<UserMapper>("user")
                 if (u != null) {
                     val reason = arg<StringMapper>("reason", "unknown reason") { rest = true } // Read until next param or the end
-                    u.directMessage ({ embed("The record has been stored but user has not been warned").queue() }) {
-                        embed("You have been warned in ${event.guild.name} for $reason").queue()
-                    }
+                    u.dm()
+                        .doOnSuccess {
+                            embed("You have been warned in ${event.guild.name} for $reason").queue()
+                        }
+                        .doOnError {
+                            embed("The record has been stored but user has not been warned").queue()
+                        }
+                        .subscribe()
                     db.store("warnings", WarnRecord(u.id, reason, System.currentTimeMillis()))
                         .fail {
                             embed()
@@ -50,4 +57,19 @@
             }
         }
     }
+```
+
+# Plugin
+```kotlin
+object PermissionManager : Plugin<PMConfig> {
+    class PMConfig (val groups: MutableMap<String, GuildMessageReceivedEvent.() -> Boolean> = mutableMapOf())
+}
+
+fun PMConfig.group(name: String, vararg roles: Role) {
+    config.groups[name] = { it.roles.any { r -> roles.contains(r) } }
+}
+
+fun Module.restrict(name: String) {
+    filter { config.groups[name].invoke(this) }
+}
 ```
