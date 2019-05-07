@@ -3,7 +3,9 @@
     fun main() {
         val bot = createBot("token") { // Registers modules and creates JDA instance
             install(PermissionManager) {
-                group("")
+                role(ModuleRestrictions.MODERATOR) {
+                    permissions += Permission.BAN_MEMBER // Required permission
+                }
             }
             install(MongoDBSupport) {
                 host = "localhost:6969"
@@ -27,10 +29,11 @@
             filter { // Module filter for command execution, events, etc.. But in this case PermissionManager is going to take care of that for us
                 
             }
-            command("warn <user> [reason]") {
+            // 3 dots (...) behind the name for rest of command
+            command("warn <user> [reason...]") { // this: ExecutionContext
                 val u = arg<UserMapper>("user")
                 if (u != null) {
-                    val reason = arg<StringMapper>("reason", "unknown reason") { rest = true } // Read until next param or the end
+                    val reason = arg<StringMapper>("reason", "unknown reason")
                     u.dm()
                         .doOnSuccess {
                             embed("You have been warned in ${event.guild.name} for $reason").queue()
@@ -39,7 +42,7 @@
                             embed("The record has been stored but user has not been warned").queue()
                         }
                         .subscribe()
-                    db.store("warnings", WarnRecord(u.id, reason, System.currentTimeMillis()))
+                    db.store(guild, "warnings", WarnRecord(u.id, reason, System.currentTimeMillis()))
                         .fail {
                             embed()
                                 .bold("FATAL ERROR: ")
@@ -62,14 +65,32 @@
 # Plugin
 ```kotlin
 object PermissionManager : Plugin<PMConfig> {
-    class PMConfig (val groups: MutableMap<String, GuildMessageReceivedEvent.() -> Boolean> = mutableMapOf())
+    class PMConfig(defaultRoles: MutableList<BotRole>)
+    data class BotRole(
+        @BsonId
+        val name: String,
+        val permissions: MutableList<Permission> = mutableListOf(),
+        val includes: MutableList<String> = mutableListOf(),
+        val excludes: MutableList<String> = mutableListOf()
+    )
 }
 
-fun PMConfig.group(name: String, vararg roles: Role) {
-    config.groups[name] = { it.roles.any { r -> roles.contains(r) } }
+fun PMConfig.role(name: String, opt: BotRole.() -> Unit = {}) {
+    val r = BotRole()
+    r.invoke(opt)
+    defaultRoles += r
 }
 
 fun Module.restrict(name: String) {
-    filter { config.groups[name].invoke(this) }
+    filter { // this: ExecutionContext
+        // Get bot roles from the db
+        var br = db.get(guild, "roles", BotRole::name eq name)
+        if (br == null) {
+            val default = PermissionManager.config.defaultRoles.find { it.name == name } ?: return@filter
+            br = default
+        }
+        if (!br.permissions.any { it in user.permissions } || br.excludes.contains(user.id) || !br.includes.contains(user.id))
+            deny() // ExecutionContext: stop execution
+    }
 }
 ```
