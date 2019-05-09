@@ -17,7 +17,7 @@
                 moderation()
                 utilities()
             }
-        }
+        }.start(wait = true)
     }
 ```
 
