@@ -23,8 +23,7 @@
 
 # Module
 ```kotlin
-    fun Modules.moderation(db: Database) {
-        module("Moderation") { // Creates a module
+    fun Modules.moderation(db: Database) = module("Moderation") { // Creates a module
             restrict(ModuleRestrictions.MODERATOR) // Plugin's extension
             filter { // Module filter for command execution, events, etc.. But in this case PermissionManager is going to take care of that for us
                 
@@ -59,7 +58,6 @@
                 }
             }
         }
-    }
 ```
 
 # Plugin

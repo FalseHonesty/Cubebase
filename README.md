@@ -1,11 +1,27 @@
 # Cubebase
-The ultimate discord bot base with powerful command processor and utilities using JDA written in Kotlin
+Cubebase is a simple, modular, powerful JDA command processor library with useful utilities and diverse support written in Kotlin. This library is heavily inspired by [ktor](https://github.com/ktorio/ktor).
 
 ## JDA 4.x BETA
 This libraries make use of JDA (Java Discord API) which is a wrapper for Discord APIs. JDA 4.x is currently still in beta. Therefore this library might be unstable.
 
-## Examples
-SoonTM
+## Getting Started
+Check [examples](example) for detailed example
+
+**Starting a bot:**
+```kotlin
+fun main() {
+    // Creates a bot with token from environment variable
+    createBot(System.getenv("token")) {
+        modules {
+            // Create a simple module
+            module("test") {
+                
+            }
+        }
+    }
+}
+```
 
 ## Libraries
-- [JDA]()
+- [JDA](https://github.com/DV8FromTheWorld/JDA)
+- [jda-reactor](https://github.com/MinnDevelopment/jda-reactor)
