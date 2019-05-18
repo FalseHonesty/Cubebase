@@ -20,7 +20,7 @@ fun main() {
             prefixFactory = { "!" }
             test()
         }
-    }
+    }.start()
 }
 
 fun Processor.test() = module("test") {

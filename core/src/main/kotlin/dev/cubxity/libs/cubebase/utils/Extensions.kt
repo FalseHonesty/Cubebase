@@ -8,7 +8,7 @@ import dev.cubxity.libs.cubebase.CubeBase
  * @param token The bot application token
  * @param opt Function to modify [CubeBase]
  */
-fun createBot(token: String, opt: CubeBase.() -> Unit = {}) = opt.invoke(CubeBase(token))
+fun createBot(token: String, opt: CubeBase.() -> Unit = {}) = CubeBase(token).also(opt)
 
 /**
  * This function creates an instance of [CubeBase] with the specified [token]
