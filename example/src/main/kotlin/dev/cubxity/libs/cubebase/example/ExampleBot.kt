@@ -9,7 +9,7 @@ import dev.cubxity.libs.cubebase.utils.createBot
 
 fun main() {
     // Creates a bot with token from environment variable
-    createBot(System.getenv("token")) {
+    createBot(System.getProperty("token")) {
         // Installs
         install(EmbedFeature) {
 

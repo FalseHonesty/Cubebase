@@ -11,10 +11,10 @@ object CommandParser {
         val res = commandStringCompile.matcher(string)
         res.find()
         val aliases = res.group("aliases").split('|')
-        return CommandParserOutput(arrayOf(), *aliases.toTypedArray())
+        return CommandParserOutput(listOf(), aliases)
     }
 
-    class CommandParserOutput(val parameters: Array<Command.Parameter>, vararg val aliases: String) {
+    class CommandParserOutput(val parameters: List<Command.Parameter>, val aliases: List<String>) {
         operator fun component1() = parameters
         operator fun component2() = aliases
     }

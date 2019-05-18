@@ -8,7 +8,7 @@ import dev.cubxity.libs.cubebase.utils.CommandParser
  * @param metadata [Metadata] for the command
  * @param aliases aliases for the command
  */
-class Command(val metadata: Metadata, var parameters: Array<Parameter>, vararg var aliases: String) {
+class Command(val metadata: Metadata, var parameters: List<Parameter>, var aliases: List<String> = listOf()) {
     val permission: String? = null
 
     /**
@@ -36,7 +36,7 @@ class Command(val metadata: Metadata, var parameters: Array<Parameter>, vararg v
      * @param metadata [Metadata] for the command
      * @param commandStr command string that will be parsed into parameters and aliases, example: help|h|? \[command]
      */
-    constructor(metadata: Metadata, commandStr: String) : this(metadata, arrayOf()) {
+    constructor(metadata: Metadata, commandStr: String) : this(metadata, listOf()) {
         val (params, aliases) = CommandParser.parseCommandString(commandStr)
         parameters = params
         this.aliases = aliases

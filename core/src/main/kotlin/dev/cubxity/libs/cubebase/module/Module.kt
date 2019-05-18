@@ -7,5 +7,5 @@ class Module(val name: String, val commands: MutableList<Command> = mutableListO
      * @param name the name of the command
      * @param aliases command aliases
      */
-    fun command(name: String, params: Array<Command.Parameter>, vararg aliases: String, opt: Command.() -> Unit = {}) = Command(Command.Metadata(name), params, *aliases).apply(opt).let { commands.add(it) }
+    fun command(name: String, params: List<Command.Parameter>, aliases: List<String>, opt: Command.() -> Unit = {}) = Command(Command.Metadata(name), params, aliases).apply(opt).let { commands.add(it) }
 }
