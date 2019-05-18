@@ -15,7 +15,7 @@ Check [examples](example) for detailed example
 fun main() {
     // Creates a bot with token from environment variable
     createBot(System.getenv("token")) {
-        modules {
+        processing {
             // Create a simple module
             module("test") {
                 
