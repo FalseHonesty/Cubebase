@@ -1,5 +1,5 @@
 # Cubebase
-Cubebase is a simple, modular, powerful JDA command processor library with useful utilities and diverse support written in Kotlin. This library is heavily inspired by [ktor](https://github.com/ktorio/ktor).
+Cubebase is a fully modular, powerful JDA command processor library with useful utilities and diverse support written in Kotlin. This library is heavily inspired by [ktor](https://github.com/ktorio/ktor).
 
 ## JDA 4.x BETA
 This libraries make use of JDA (Java Discord API) which is a wrapper for Discord APIs. JDA 4.x is currently still in beta. Therefore this library might be unstable.

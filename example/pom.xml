@@ -32,11 +32,6 @@
             <artifactId>CubebaseCore</artifactId>
             <version>1.0</version>
         </dependency>
-        <dependency>
-            <groupId>dev.cubxity.libs.cubebase</groupId>
-            <artifactId>CubebaseDB</artifactId>
-            <version>1.0</version>
-        </dependency>
     </dependencies>
 
     <build>
