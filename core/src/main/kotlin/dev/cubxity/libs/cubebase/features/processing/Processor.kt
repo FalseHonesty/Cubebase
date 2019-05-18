@@ -34,34 +34,44 @@ class Processor(val bot: CubeBase) {
      * This method processes the command
      */
     fun processEvent(e: GuildMessageReceivedEvent) {
+        // Grab the raw message. If it is empty, we can ignore this event.
         val msg = e.message.contentRaw.ifEmpty { return }
-        val p = prefixFactory.invoke(e.guild)
+
+        // Next, find the prefix for the guild the message was sent in.
+        val p = prefixFactory(e.guild)
+
         val args = msg.substring(p.length).split(' ')
-        // Check if the message starts with the prefix
-        if (msg.startsWith(p)) {
-            val c = args[0].ifEmpty { return }.toLowerCase()
-            modules.forEach { m ->
-                val cmd = m.commands.find { it.aliases.contains(c) } ?: return@forEach
-                val ctx = CommandProcessingContext(e, m, cmd)
-                // Feature filtering & permission filtering
-                bot.run(CommandProcessingPipeline.FILTER, ctx) {
-                    if (!permissionFactory.invoke(ctx)) cancelled = true
-                }
-                if (ctx.cancelled) return
 
-                // Logging, etc..
-                bot.run(CommandProcessingPipeline.MONITORING, ctx)
+        // Check if the message starts with the prefix. If not, end & return early
+        if (!msg.startsWith(p)) return
 
-                // Parsing
-                bot.run(CommandProcessingPipeline.PARSE, ctx) {
+        val command = args[0].ifEmpty { return }.toLowerCase()
 
-                }
-                if (ctx.cancelled) return
+        modules.forEach { module ->
+            // Do we actually have the command they tried to run?
+            val cmd = module.commands.find { it.aliases.contains(command) } ?: return@forEach
 
-                // Processing
+            val ctx = CommandProcessingContext(e, module, cmd)
 
-                return
+            // Feature filtering & permission filtering
+            bot.run(CommandProcessingPipeline.FILTER, ctx) {
+                if (!permissionFactory.invoke(ctx)) cancelled = true
             }
+
+            if (ctx.cancelled) return
+
+            // Logging, etc..
+            bot.run(CommandProcessingPipeline.MONITORING, ctx)
+
+            // Parsing
+            bot.run(CommandProcessingPipeline.PARSE, ctx) {
+
+            }
+            if (ctx.cancelled) return
+
+            // Processing
+
+            return
         }
     }
 
